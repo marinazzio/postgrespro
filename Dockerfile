@@ -26,6 +26,7 @@ RUN set -ex; \
 	fetchDeps=' \
 		ca-certificates \
 		wget \
+    lsb-release \
 	'; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends $fetchDeps; \
@@ -43,9 +44,7 @@ RUN set -ex; \
 	\
 	chmod +x /usr/local/bin/gosu; \
 # verify that the binary works
-	gosu nobody true; \
-	\
-	apt-get purge -y --auto-remove $fetchDeps
+	gosu nobody true
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 ENV LANG en_US.utf8
@@ -63,7 +62,8 @@ RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/debian $(lsb_release -c
 
 RUN apt-get install -y postgrespro-std-10-client postgrespro-std-10-libs  postgrespro-std-10-contrib libicu-dev
 
-RUN apt-get purge -y --auto-remove ca-certificates
+# RUN apt-get purge -y --auto-remove ca-certificates
+RUN apt-get purge -y --auto-remove $fetchDeps
 
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
