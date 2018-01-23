@@ -71,7 +71,7 @@ VOLUME /var/lib/postgresql/data
 # COPY en-dict/* /usr/share/postgresql/9.6/tsearch_data/
 
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod 777 /usr/local/bin/docker-entrypoint.sh
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 
