@@ -11,9 +11,9 @@ RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.10
 RUN set -x \
-	&& apt update \
-  && apt upgrade -y && \
-  && apt install -y --no-install-recommends \
+	&& apt-get update \
+  && apt-get upgrade -y \
+  && apt-get install -y --no-install-recommends \
         ca-certificates locales wget lsb apt-utils language-pack-ru \
   && rm -rf /var/lib/apt/lists/* \
   && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
@@ -25,15 +25,16 @@ RUN set -x \
 	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
-	&& apt purge -y --auto-remove ca-certificates
+	&& apt-get purge -y --auto-remove ca-certificates
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 ENV LANG en_US.utf8
 
 RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
 	wget --quiet -O - http://repo.postgrespro.ru/pgpro-10/keys/GPG-KEY-POSTGRESPRO | apt-key add - && \
-	apt update && \
-	apt install -y postgrespro-std-10 libpq5 postgrespro-client
+	apt-get update && \
+	apt-get install -y \
+            postgrespro-std-10-client postgrespro-std-10-libs postgrespro-std-10-server postgrespro-std-10-contrib libicu-dev
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
 
