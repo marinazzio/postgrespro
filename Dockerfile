@@ -47,7 +47,9 @@ RUN set -ex; \
 	gosu nobody true
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
-ENV LANG en_US.utf8
+# ENV LANG en_US.utf8
+
+RUN localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
 
 RUN mkdir /docker-entrypoint-initdb.d
 
