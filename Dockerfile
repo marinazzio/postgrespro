@@ -49,8 +49,6 @@ RUN set -ex; \
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 # ENV LANG en_US.utf8
 
-RUN localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
-
 RUN mkdir /docker-entrypoint-initdb.d
 
 RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/debian $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
@@ -67,6 +65,8 @@ ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
 VOLUME /var/lib/postgresql/data
+
+RUN localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
 
 #copy dict
 # COPY ru-dict/* /usr/share/postgresql/9.6/tsearch_data/
