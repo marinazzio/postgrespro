@@ -49,22 +49,15 @@ RUN set -ex; \
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 ENV LANG en_US.utf8
 
+RUN mkdir /docker-entrypoint-initdb.d
 
 RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/debian $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
     wget --quiet -O - http://repo.postgrespro.ru/pgpro-10/keys/GPG-KEY-POSTGRESPRO | apt-key add - && \
     apt-get update && \
+	  apt-get install -y postgrespro-std-10-server postgrespro-std-10-client postgrespro-std-10-libs  postgrespro-std-10-contrib libicu-dev
 
 
-# RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
-# 	wget --quiet -O - http://repo.postgrespro.ru/pgpro-10/keys/GPG-KEY-POSTGRESPRO | apt-key add - && \
-# 	apt-get update && \
-	apt-get install -y postgrespro-std-10-server
-
-RUN apt-get install -y postgrespro-std-10-client postgrespro-std-10-libs  postgrespro-std-10-contrib libicu-dev
-
-# RUN apt-get purge -y --auto-remove ca-certificates
 RUN apt-get purge -y --auto-remove $fetchDeps
-
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
 
