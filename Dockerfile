@@ -1,4 +1,15 @@
-FROM ubuntu:latest
+FROM debian:stretch
+
+RUN set -ex; \
+	if ! command -v gpg > /dev/null; then \
+		apt-get update; \
+		apt-get install -y --no-install-recommends \
+			gnupg \
+			dirmngr \
+		; \
+		rm -rf /var/lib/apt/lists/*; \
+	fi
+
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV PG_MAJOR 10
@@ -14,7 +25,7 @@ RUN set -x \
 	&& apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
-        ca-certificates locales wget lsb apt-utils language-pack-ru \
+        ca-certificates locales wget lsb-release apt-utils \
   && rm -rf /var/lib/apt/lists/* \
   && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
@@ -24,17 +35,26 @@ RUN set -x \
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
 	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
-	&& gosu nobody true \
-	&& apt-get purge -y --auto-remove ca-certificates
+	&& gosu nobody true
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 ENV LANG en_US.utf8
 
-RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
-	wget --quiet -O - http://repo.postgrespro.ru/pgpro-10/keys/GPG-KEY-POSTGRESPRO | apt-key add - && \
-	apt-get update && \
-	apt-get install -y \
-            postgrespro-std-10-client postgrespro-std-10-libs postgrespro-std-10-server postgrespro-std-10-contrib libicu-dev
+
+RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/debian $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
+    wget --quiet -O - http://repo.postgrespro.ru/pgpro-10/keys/GPG-KEY-POSTGRESPRO | apt-key add - && \
+    apt-get update && \
+
+
+# RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
+# 	wget --quiet -O - http://repo.postgrespro.ru/pgpro-10/keys/GPG-KEY-POSTGRESPRO | apt-key add - && \
+# 	apt-get update && \
+	apt-get install -y postgrespro-std-10-server
+
+RUN apt-get install -y postgrespro-std-10-client postgrespro-std-10-libs  postgrespro-std-10-contrib libicu-dev
+
+RUN apt-get purge -y --auto-remove ca-certificates
+
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
 
