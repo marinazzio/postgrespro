@@ -58,7 +58,7 @@ if [ "$1" = 'postgres' ]; then
 		if [ "$POSTGRES_INITDB_WALDIR" ]; then
 			export POSTGRES_INITDB_ARGS="$POSTGRES_INITDB_ARGS --waldir $POSTGRES_INITDB_WALDIR"
 		fi
-		eval "gosu root pg-setup initdb --username=postgres $POSTGRES_INITDB_ARGS"
+		eval "gosu postgres pg-setup initdb --username=postgres $POSTGRES_INITDB_ARGS"
 
 		# check password first so we can output the warning before postgres
 		# messes it up
