@@ -68,6 +68,8 @@ VOLUME /var/lib/pgpro/std-10/data
 
 RUN localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
 
+RUN pg-wrapper links update
+
 #copy dict
 # COPY ru-dict/* /usr/share/postgresql/9.6/tsearch_data/
 # COPY en-dict/* /usr/share/postgresql/9.6/tsearch_data/
