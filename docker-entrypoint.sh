@@ -94,7 +94,7 @@ if [ "$1" = 'postgres' ]; then
     {
       echo
       echo "listen_addresses = '*'"
-    }
+    } >> "$PGDATA/postgresql.conf"
 
 		# internal start of server in order to allow set-up using psql-client
 		# does not listen on external TCP/IP and waits until start finishes
