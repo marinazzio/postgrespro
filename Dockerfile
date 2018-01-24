@@ -36,14 +36,14 @@ RUN set -ex; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	\
-# verify the signature
+  # verify the signature
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
 	rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
 	chmod +x /usr/local/bin/gosu; \
-# verify that the binary works
+  # verify that the binary works
 	gosu nobody true
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
@@ -54,8 +54,7 @@ RUN mkdir /docker-entrypoint-initdb.d
 RUN sh -c 'echo "deb http://repo.postgrespro.ru/pgpro-10/debian $(lsb_release -cs) main" > /etc/apt/sources.list.d/postgrespro.list' && \
     wget --quiet -O - http://repo.postgrespro.ru/pgpro-10/keys/GPG-KEY-POSTGRESPRO | apt-key add - && \
     apt-get update && \
-	  apt-get install -y postgrespro-std-10-server postgrespro-std-10-client postgrespro-std-10-libs  postgrespro-std-10-contrib libicu-dev
-
+	  apt-get install -y postgrespro-std-10-server postgrespro-std-10-client postgrespro-std-10-libs
 
 RUN apt-get purge -y --auto-remove $fetchDeps
 
@@ -63,7 +62,8 @@ RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgres
 
 ENV PATH /opt/pgpro/std-10/bin:$PATH
 ENV PGDATA /var/lib/pgpro/std-10/data
-RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
+# this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
+RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 VOLUME /var/lib/pgpro/std-10/data
 
 RUN localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
@@ -76,7 +76,8 @@ RUN pg-wrapper links update
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod 777 /usr/local/bin/docker-entrypoint.sh
-RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
+# backwards compat
+RUN ln -s usr/local/bin/docker-entrypoint.sh /
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 5432
