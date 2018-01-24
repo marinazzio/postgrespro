@@ -61,10 +61,10 @@ RUN apt-get purge -y --auto-remove $fetchDeps
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
 
-ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
-ENV PGDATA /var/lib/postgresql/data
+ENV PATH /opt/pgpro/std-10/bin:$PATH
+ENV PGDATA /var/lib/pgpro/std-10/data
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
-VOLUME /var/lib/postgresql/data
+VOLUME /var/lib/pgpro/std-10/data
 
 RUN localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
 
